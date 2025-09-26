@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -23,7 +22,7 @@ where
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
             count: 0,
-            items: vec![T::default()],
+            items: vec![],
             comparator,
         }
     }
@@ -37,7 +36,59 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.count += 1;
+
+        self.items.push(value);
+
+        let idx = self.count;
+
+
+        self.shift_up(idx);
+    }
+
+    pub fn pop(&mut self) -> Option<T> {
+        if self.count == 0 {
+            return None;
+        } else if self.count == 1 {
+            self.count = 0;
+            return self.items.pop();
+        } else {
+            self.items.swap(0, self.count -1);
+            let result = self.items.pop();
+
+            self.count -= 1;
+            self.shift_down(1);
+
+            return result;
+        }
+    }
+
+    // note that idx starts from 1
+    fn shift_up(&mut self, mut idx: usize) {
+        while idx != 1 {
+            let parent = self.parent_idx(idx);
+            
+            if (self.comparator)(&self.items[idx-1], &self.items[parent-1]) {
+                self.items.swap(idx-1, parent-1);
+                idx = parent;
+            } else {
+                break;
+            }
+        }
+    }
+
+    fn shift_down(&mut self, mut idx: usize) {
+        loop {
+            let small_child = self.smallest_child_idx(idx);
+
+            if small_child != idx && (self.comparator)(&self.items[small_child-1], &self.items[idx-1]) {
+                self.items.swap(idx-1, small_child-1);
+                idx = small_child;
+            } else {
+                // already satisfied
+                break;
+            }
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +108,25 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        if !self.children_present(idx) {
+            return idx;
+        }
+
+        let left_child = self.left_child_idx(idx);
+        let right_child = self.right_child_idx(idx);
+
+        if right_child > self.count {
+            return left_child;
+        }
+
+        let left_val = &self.items[left_child - 1];
+        let right_val = &self.items[right_child - 1];
+
+        if (self.comparator)(left_val, right_val) {
+            left_child
+        } else {
+            right_child
+        }
     }
 }
 
@@ -84,8 +152,7 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        return self.pop();
     }
 }
 
