@@ -3,7 +3,6 @@
     This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -77,7 +76,7 @@ where
             return true;
         }
 
-        if self.value > value {
+        if value > self.value {
             if self.right.is_none() {
                 return false;
             }
@@ -96,7 +95,9 @@ where
     fn insert(&mut self, value: T) {
         let current_val = &(self.value);
 
-        if value <= *current_val {
+        if value == *current_val {
+            return;
+        } else if value < *current_val {
             if self.left.is_none() {
                 self.left = Some(Box::new(TreeNode::new(value)));
                 return;
